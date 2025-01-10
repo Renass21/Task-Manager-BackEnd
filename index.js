@@ -1,16 +1,23 @@
-const express = require('express')
+const express = require("express");
+const dotenv = require("dotenv");
 
-const app = express()
+const connectToDataBase = require("./src/database/mongoose.database");
 
-app.get('/tasks', (req, res) => {
+dotenv.config();
+
+const app = express();
+
+connectToDataBase();
+
+app.get("/tasks", (req, res) => {
     const tasks = [
         {
-            description: 'Study programation',
-            stake: 'web development',
+            description: "Study programation",
+            stake: "web development",
             isCompleted: false,
         },
-    ]
-    res.status(200).send(tasks)
-})
+    ];
+    res.status(200).send(tasks);
+});
 
-app.listen(8000, () => console.log('Listening on port 8000'))
+app.listen(8000, () => console.log("Listening on port 8000"));
