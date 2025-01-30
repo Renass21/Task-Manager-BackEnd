@@ -42,6 +42,30 @@ app.post("/tasks", async (req, res) => {
     }
 });
 
+app.patch('/tassks/:id', async (req, res)=>{
+    try {
+        const taskId = req.params.id;
+        const taskData = req.body;
+        
+        const taskUpdate = await TaskModel.findByIdAndUpdate(taskId, taskData);
+        if(!taskUpdate){
+            return res.status(404).send('Task not found')
+        }
+
+        const allowedUpdates = ['isCompleted']
+        const requestedUpdates = Object.keys(req.body)
+
+        for(update of  requestedUpdates){
+            if(allowedUpdates.includes(update)){
+                taskUpdate[update] = req.body[update]
+            }
+        }
+        await taskUpdate.save()
+        res.status(200).send(taskUpdate)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
 app.delete("/tasks/:id", async (req, res) => {
     try {
         const taskId = req.params.id;
