@@ -10,7 +10,7 @@ app.use(express.json());
 
 connectToDataBase();
 
-app.get("/tasks", async (req, res) => {
+app.get("/tasks", async (res) => {
     try {
         const tasks = await TaskModel.find({});
         res.status(200).send(tasks);
@@ -19,6 +19,17 @@ app.get("/tasks", async (req, res) => {
     }
 });
 
+app.get('/tasks/:id', async (req, res)=> {
+    try {
+        const taskId = req.params.id
+        const tasks = await TaskModel.findById({taskId});
+        if(!tasks){
+            return res.status(404).send('Task not found')
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
 app.post("/tasks", async (req, res) => {
     try {
         const newTask = new TaskModel(req.body);
@@ -38,7 +49,7 @@ app.delete("/tasks/:id", async (req, res) => {
         const taskToDelete = await TaskModel.findById(taskId);
 
         if (!taskToDelete) {
-            return res.status(403).send("Task not found");
+            return res.status(404).send("Task not found");
         }
 
         const deletedTask = await TaskModel.findByIdAndDelete(taskId);
