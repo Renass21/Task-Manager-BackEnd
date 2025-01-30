@@ -58,6 +58,8 @@ app.patch('/tassks/:id', async (req, res)=>{
         for(update of  requestedUpdates){
             if(allowedUpdates.includes(update)){
                 taskUpdate[update] = req.body[update]
+            } else {
+                return res.status(403).send('Invalid update')
             }
         }
         await taskUpdate.save()
