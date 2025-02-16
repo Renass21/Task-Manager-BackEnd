@@ -1,5 +1,6 @@
 const TaskModel = require('../models/task.model');
 const { notFoundError } = require("../errors/mongodb.errors");
+const { notAllowedFieldsToUpdateError } = require("../errors/general.errors");
 class TaskController {
     constructor(req, res) {
         this.req = req;
@@ -53,7 +54,7 @@ class TaskController {
                 if(allowedUpdates.includes(update)){
                     taskUpdate[update] = req.body[update]
                 } else {
-                    return notFoundError(this.res);
+                    return notAllowedFieldsToUpdateError(this.res);
                 }
             }
             await taskUpdate.save()
