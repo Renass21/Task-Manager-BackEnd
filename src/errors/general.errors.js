@@ -4,4 +4,5 @@ const notAllowedFieldsToUpdateError = (res) => {
 
 module.exports = {
     notAllowedFieldsToUpdateError,
+    
 }
