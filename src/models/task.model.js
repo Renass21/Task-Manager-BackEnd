@@ -9,7 +9,6 @@ class TaskModel {
     }
 }
 
-
 Object.defineProperty(TaskModel, "name", { value: 'task' }); 
 TaskModel = Entity()(TaskModel);
 
