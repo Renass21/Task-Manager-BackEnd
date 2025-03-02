@@ -1,94 +1,66 @@
-const TaskModel = require('../models/task.model');
-const { notFoundError, objectIdCastError  } = require("../errors/mongodb.errors");
-const { notAllowedFieldsToUpdateError } = require("../errors/general.errors");
+const TaskRepository = require("../repositories/taskRepository");
+
 class TaskController {
-    constructor(req, res) {
-        this.req = req;
-        this.res = res;
-    }
-
-    async getTasks(){
+   
+    async getTasks(req, res) {
         try {
-            const tasks = await TaskModel.find({});
-            this.res.status(200).send(tasks);
+            const tasks = await TaskRepository.getTasks();
+            res.status(200).json(tasks);
         } catch (error) {
-            this.res.status(500).send(error.message);
+            res.status(500).send("Erro ao obter tarefas: " + error.message);
         }
     }
 
-    async getTaskById(){
+     async getTaskById(req, res) {
+        const { id } = req.params;
         try {
-                const taskId = req.params.id
-                const tasks = await TaskModel.findById({taskId});
-                if(!tasks){
-                    return notFoundError(this.res);
-                }
-                return this.res.status(200).send(tasks);
-            } catch (error) {
-                if(error instanceof mongoose.Error.CastError){
-                    return objectIdCastError(this.res);
+            const task = await TaskRepository.getTaskById(id);
+            if (!task) {
+                return res.status(404).send("Tarefa não encontrada");
             }
-            return this.res.status(500).send(error.message)
-            }
-    }    
-    async createTask(){
-        try {
-            const newTask = new TaskModel(req.body);
-            await newTask.save();
-    
-            this.res.status(201).send(newTask);
+            res.status(200).json(task);
         } catch (error) {
-            this.res.status(500).send(error.message);
+            res.status(500).send("Erro ao obter tarefa: " + error.message);
         }
     }
-    async updateTask(){
+
+    
+     async createTask(req, res) {
+        const { description, isCompleted } = req.body;
         try {
-            const taskId = req.params.id;
-            const taskData = req.body;
-            
-            const taskUpdate = await TaskModel.findByIdAndUpdate(taskId, taskData);
-            if(!taskUpdate){
-                return notFoundError(this.res);
-            }
-    
-            const allowedUpdates = ['isCompleted']
-            const requestedUpdates = Object.keys(req.body)
-    
-            for(update of  requestedUpdates){
-                if(allowedUpdates.includes(update)){
-                    taskUpdate[update] = req.body[update]
-                } else {
-                    return notAllowedFieldsToUpdateError(this.res);
-                }
-            }
-            await taskUpdate.save()
-            res.status(200).send(taskUpdate)
+            const newTask = await TaskRepository.createTask({ description, isCompleted });
+            res.status(201).json(newTask);
         } catch (error) {
-            if(error instanceof mongoose.Error.CastError){
-                return objectIdCastError(this.res);
-            }
-            return res.status(500).send(error.message)
+            res.status(500).send("Erro ao criar tarefa: " + error.message);
         }
     }
-    async deleteTask(){
+
+   
+    async updateTask(req, res) {
+        const { id } = req.params;
+        const { description, isCompleted } = req.body;
         try {
-            const taskId = req.params.id;
-    
-            const taskToDelete = await TaskModel.findById(taskId);
-    
-            if (!taskToDelete) {
-                return notFoundError(this.res);
-               
+            const updatedTask = await TaskRepository.updateTask(id, { description, isCompleted });
+            if (!updatedTask) {
+                return res.status(404).send("Tarefa não encontrada");
             }
-    
-            const deletedTask = await TaskModel.findByIdAndDelete(taskId);
-    
-            res.status(200).send(deletedTask);
+            res.status(200).json(updatedTask);
         } catch (error) {
-            if(error instanceof mongoose.Error.CastError){
-                return objectIdCastError(this.res);
+            res.status(500).send("Erro ao atualizar tarefa: " + error.message);
+        }
+    }
+
+ 
+    async deleteTask(req, res) {
+        const { id } = req.params;
+        try {
+            const deletedTask = await TaskRepository.deleteTask(id);
+            if (!deletedTask) {
+                return res.status(404).send("Tarefa não encontrada");
             }
-            return res.status(500).send(error.message);
+            res.status(200).json(deletedTask);
+        } catch (error) {
+            res.status(500).send("Erro ao deletar tarefa: " + error.message);
         }
     }
 }

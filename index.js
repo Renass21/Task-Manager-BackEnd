@@ -1,8 +1,8 @@
 const express = require("express");
 const TaskRoutes = require("./src/routes/task.routes");
 const cors = require("cors");
-
-const connectToDataBase = require("./src/database/mongoose.database");
+require("reflect-metadata");
+const connectToDataBase = require("./src/database/postgresql.database");
 
 
 const app = express();
