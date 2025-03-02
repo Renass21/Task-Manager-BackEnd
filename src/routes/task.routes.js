@@ -3,14 +3,24 @@ const router = express.Router();
 
 const TaskController = require('../controllers/task.controller');
 
-router.get("/", TaskController.getTasks);
+router.get("/", async (req, res) => {
+    return new TaskController().getTasks(req, res);
+});
 
-router.get('/:id', TaskController.getTaskById);
+router.get('/:id', async (req, res) => {
+    return new TaskController().getTaskById(req, res);
+});
 
-router.post("/", TaskController.createTask);
+router.post("/", async (req, res) => {
+    return new TaskController().createTask(req, res);
+});
 
-router.patch('/:id', TaskController.updateTask);
+router.patch('/:id', async (req, res) => {
+    return new TaskController().updateTask(req, res);
+});
 
-router.delete("/:id", TaskController.deleteTask);
+router.delete("/:id", async (req, res) => {
+    return new TaskController().deleteTask(req, res);
+});
 
 module.exports = router;
