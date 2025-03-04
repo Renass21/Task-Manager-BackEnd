@@ -1,20 +1,9 @@
-
-const { Entity, PrimaryGeneratedColumn, Column } = require("typeorm");
-
 class TaskModel {
-    constructor() {
-        this.id = undefined;
-        this.description = undefined;
-        this.isCompleted = false;
+    constructor(id, description, isCompleted) {
+        this.id = id || undefined;
+        this.description = description || '';
+        this.isCompleted = isCompleted !== undefined ? isCompleted : false; 
     }
 }
-
-Object.defineProperty(TaskModel, "name", { value: 'task' }); 
-TaskModel = Entity()(TaskModel);
-
-
-TaskModel = PrimaryGeneratedColumn()(TaskModel, "id");
-TaskModel = Column("varchar")(TaskModel, "description");
-TaskModel = Column({ type: "boolean", default: false })(TaskModel, "isCompleted");
 
 module.exports = TaskModel;

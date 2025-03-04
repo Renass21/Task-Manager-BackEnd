@@ -10,6 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 connectToDataBase();
-app.use('/tasks' ,TaskRoutes);
+app.use('/tasks', TaskRoutes);
 
 app.listen(8000, () => console.log("Listening on port 8000"));

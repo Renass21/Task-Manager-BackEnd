@@ -1,7 +1,7 @@
-const TaskRepository = require("../repositories/taskRepository");
+const TaskRepository = require("../repositories/task.repository");
 
 class TaskController {
-   
+    
     async getTasks(req, res) {
         try {
             const tasks = await TaskRepository.getTasks();
@@ -12,8 +12,9 @@ class TaskController {
     }
 
      async getTaskById(req, res) {
-        const { id } = req.params;
+       
         try {
+            const { id } = req.params;
             const task = await TaskRepository.getTaskById(id);
             if (!task) {
                 return res.status(404).send("Tarefa não encontrada");
@@ -26,8 +27,10 @@ class TaskController {
 
     
      async createTask(req, res) {
-        const { description, isCompleted } = req.body;
+      
         try {
+            const { description, isCompleted } = req.body;
+
             const newTask = await TaskRepository.createTask({ description, isCompleted });
             res.status(201).json(newTask);
         } catch (error) {
@@ -37,10 +40,17 @@ class TaskController {
 
    
     async updateTask(req, res) {
-        const { id } = req.params;
-        const { description, isCompleted } = req.body;
         try {
-            const updatedTask = await TaskRepository.updateTask(id, { description, isCompleted });
+            const { id } = req.params;
+            let { description, isCompleted } = req.body;
+            
+            if (description === undefined || isCompleted === undefined) {
+                return res.status(400).send("Dados incompletos. Verifique description e isCompleted.");
+            }
+
+            const booleanIsCompleted = isCompleted === 'true' || isCompleted === true;
+
+            const updatedTask = await TaskRepository.updateTask(id, { description, isCompleted: booleanIsCompleted });
             if (!updatedTask) {
                 return res.status(404).send("Tarefa não encontrada");
             }
@@ -52,8 +62,9 @@ class TaskController {
 
  
     async deleteTask(req, res) {
-        const { id } = req.params;
+       
         try {
+            const { id } = req.params;
             const deletedTask = await TaskRepository.deleteTask(id);
             if (!deletedTask) {
                 return res.status(404).send("Tarefa não encontrada");
